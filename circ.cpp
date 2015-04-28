@@ -96,8 +96,8 @@ circle_t circle3p(point_t p1, point_t p2, point_t p3) {
    *  3) n12*t12 - n23*t23 = c23 - c12
    *
    *  4) | n12x   -n23x |   | t12 |   | c23x - c12x |
-         |              | * |     | = |             |
-         | n12y   -n23y |   | t23 |   | c23y - c12y |
+   *     |              | * |     | = |             |
+   *     | n12y   -n23y |   | t23 |   | c23y - c12y |
    *
    *  5) A * x = b
    *  6) x = A^-1 * b
