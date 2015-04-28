@@ -1,6 +1,8 @@
 #include <iostream>
+#include <boost/numeric/interval.hpp>
 
 int main()
 {
-  std::cout << "Hello world";
+  boost::numeric::interval<double> i;
+  std::cout << "Hello world " << i.lower() << ", " << i.upper();
 }
