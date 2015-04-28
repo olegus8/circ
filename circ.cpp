@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdio.h>
 #include <vector>
 #include <boost/numeric/interval.hpp>
 
@@ -30,11 +30,12 @@ inum_t dist(point_t, point_t);
 bound_c & bound_c::add(num_t x, num_t y) {
   if (x < -POINT_XY_MAX || x > POINT_XY_MAX ||
       y < -POINT_XY_MAX || y > POINT_XY_MAX)
-    throw "point coords are too large";
-  point_t p;
-  p.x = x;
-  p.y = y;
-  points.push_back(p);
+    printf("point coords are too large: %f, %f", x, y);
+  else {
+    point_t p;
+    p.x = x;
+    p.y = y;
+    points.push_back(p);}
   return *this;}
 
 circle_t bound_c::min_circle() const {
@@ -115,7 +116,7 @@ circle_t circle3p(point_t p1, point_t p2, point_t p3) {
 
   circle_t circle;
 
-  // Check if center is not too far.
+  // Check if center is too far.
   inum_t dist_detA = len(n12) * abs(t12detA);
   inum_t maxdist_detA = inum_t(RADIUS_MAX)*detA;
   if (overlap(dist_detA, maxdist_detA) || dist_detA > maxdist_detA)
@@ -127,10 +128,23 @@ circle_t circle3p(point_t p1, point_t p2, point_t p3) {
   circle.r = dist(p1, circle.o);
   return circle;}
 
-void print(circle_t c) {
-  std::cout << "o.x=" << c.o.x.lower() << "..." << c.o.x.upper() << ", "
-            << "o.y=" << c.o.y.lower() << "..." << c.o.y.upper() << ", "
-            << "r=" << c.r.lower() << "..." << c.r.upper();}
+void test(circle_t c, num_t x, num_t y, num_t r) {
+  if (c.r.lower() != r || c.o.x.lower() != x || c.o.y.lower() != y) {
+    printf("Test failed.\n");
+    printf("Expected: x=%a, y=%a, r=%a\n", x, y, r);
+    printf("Actual: x=%a, y=%a, r=%a\n",
+           c.o.x.lower(), c.o.y.lower(), c.r.lower());}}
 
 int main() {
-  print(bound_c().add(0,0).add(1,1).add(2,2).min_circle());}
+  test(bound_c().min_circle(), 0, 0, 0);
+  test(bound_c().add(0,0).add(1,1).add(2,2).min_circle(),
+       num_t(1), num_t(1), num_t(0x1.6a09e8p+0));
+  test(bound_c().add(0,0).min_circle(),
+       num_t(0), num_t(0), num_t(0));
+  test(bound_c().add(0.1,0.1).min_circle(),
+       num_t(0x1.999998p-4), num_t(0x1.999998p-4), num_t(0x1.6a09e8p-27));
+  test(bound_c().add(-1000,-1000).add(-1000, 1000)
+                .add( 1000, 1000).add( 1000,-1000).min_circle(),
+       num_t(0), num_t(0), num_t(0x1.618dacp+10));
+  test(bound_c().add(0,0.0000001).add(0.0000001,0).add(1000,1000).min_circle(),
+       num_t(0x1.f3fffcp+8), num_t(0x1.f3fffcp+8), num_t(0x1.618daep+9));}
