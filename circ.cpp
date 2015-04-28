@@ -133,16 +133,21 @@ void test(circle_t c, num_t x, num_t y, num_t r) {
     printf("Test failed.\n");
     printf("Expected: x=%a, y=%a, r=%a\n", x, y, r);
     printf("Actual: x=%a, y=%a, r=%a\n",
-           c.o.x.lower(), c.o.y.lower(), c.r.lower());}}
+           c.o.x.lower(), c.o.y.lower(), c.r.lower());}
+  else
+    printf("Test passed.\n");}
 
 int main() {
   test(bound_c().min_circle(), 0, 0, 0);
-  test(bound_c().add(0,0).add(1,1).add(2,2).min_circle(),
-       num_t(1), num_t(1), num_t(0x1.6a09e8p+0));
-  test(bound_c().add(0,0).min_circle(),
-       num_t(0), num_t(0), num_t(0));
+  test(bound_c().add(0,0).min_circle(), 0, 0, 0);
+  test(bound_c().add(1,1).min_circle(), 1, 1, 0);
+
+  // because (0.1+0.1+0.1)/3 != 0.1
   test(bound_c().add(0.1,0.1).min_circle(),
        num_t(0x1.999998p-4), num_t(0x1.999998p-4), num_t(0x1.6a09e8p-27));
+
+  test(bound_c().add(0,0).add(1,1).add(2,2).min_circle(),
+       num_t(1), num_t(1), num_t(0x1.6a09e8p+0));
   test(bound_c().add(-1000,-1000).add(-1000, 1000)
                 .add( 1000, 1000).add( 1000,-1000).min_circle(),
        num_t(0), num_t(0), num_t(0x1.618dacp+10));
